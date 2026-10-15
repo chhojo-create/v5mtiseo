@@ -425,17 +425,30 @@
         }
       });
 
-      if (valid) {
-        const btn = form.querySelector('.submit-btn');
-        btn.textContent = 'Sending…';
-        btn.disabled = true;
-        // Simulate submission
-        setTimeout(() => {
-          form.reset();
-          successMsg.style.display = 'flex';
-          btn.style.display = 'none';
-        }, 1200);
-      }
+     if (valid) {
+  const btn = form.querySelector('.submit-btn');
+  btn.textContent = 'Sending…';
+  btn.disabled = true;
+
+  const payload = Object.fromEntries(new FormData(form).entries());
+
+  fetch('/api/contact', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+    .then(res => {
+      if (!res.ok) throw new Error('Failed');
+      form.reset();
+      successMsg.style.display = 'flex';
+      btn.style.display = 'none';
+    })
+    .catch(() => {
+      btn.textContent = 'Send Message';
+      btn.disabled = false;
+      alert('Sorry, your message could not be sent. Please call +91 79 22123506 or email us directly.');
+    });
+}
     });
 
     // Clear errors on input
